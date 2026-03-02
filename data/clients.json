@@ -1,0 +1,97 @@
+[
+  {
+    "id": "client_001",
+    "name": "Sarah Chen",
+    "date_of_birth": "1990-03-15",
+    "address": "42 Maple Street, Toronto, ON M5V 2T6",
+    "citizenship": "Canadian",
+    "occupation": "Software Engineer",
+    "employer": "Shopify Inc.",
+    "account_type": "TFSA",
+    "source_of_funds": "Employment income",
+    "id_document": {
+      "type": "Canadian Passport",
+      "number": "GA123456",
+      "issuing_jurisdiction": "Canada",
+      "expiry_date": "2029-08-20"
+    },
+    "expected_path": "standard",
+    "notes": "Clean case \u2014 standard verification, no flags"
+  },
+  {
+    "id": "client_002",
+    "name": "Viktor Petrov",
+    "date_of_birth": "1975-11-02",
+    "address": "1200 Bay Street, Unit 3401, Toronto, ON M5R 2A5",
+    "citizenship": "Russian (Canadian PR)",
+    "occupation": "Business Consultant",
+    "employer": "Self-employed \u2014 Petrov Holdings Ltd.",
+    "account_type": "Non-registered",
+    "source_of_funds": "Business income and investments",
+    "id_document": {
+      "type": "Canadian Permanent Resident Card",
+      "number": "PR9988776",
+      "issuing_jurisdiction": "Canada",
+      "expiry_date": "2027-05-10"
+    },
+    "expected_path": "high_risk",
+    "notes": "High risk \u2014 self-employed, foreign citizenship from high-risk jurisdiction, large expected deposits"
+  },
+  {
+    "id": "client_003",
+    "name": "Maria Santos",
+    "date_of_birth": "1988-07-22",
+    "address": "567 Queen Street West, Vancouver, BC V6B 1A1",
+    "citizenship": "Canadian",
+    "occupation": "Registered Nurse",
+    "employer": "Vancouver General Hospital",
+    "account_type": "RRSP",
+    "source_of_funds": "Employment income",
+    "id_document": {
+      "type": "British Columbia Driver's Licence",
+      "number": "DL7654321",
+      "issuing_jurisdiction": "British Columbia",
+      "expiry_date": "2021-12-31"
+    },
+    "expected_path": "verification_failure",
+    "notes": "Expired ID \u2014 identity verification will fail, requires escalation or new document"
+  },
+  {
+    "id": "client_004",
+    "name": "Jean-Pierre Trudeau",
+    "date_of_birth": "1968-04-10",
+    "address": "24 Sussex Drive, Ottawa, ON K1M 1M4",
+    "citizenship": "Canadian",
+    "occupation": "Retired \u2014 Former Diplomat",
+    "employer": "N/A \u2014 Retired",
+    "account_type": "TFSA",
+    "source_of_funds": "Pension and savings",
+    "id_document": {
+      "type": "Canadian Passport",
+      "number": "HB998877",
+      "issuing_jurisdiction": "Canada",
+      "expiry_date": "2028-11-15"
+    },
+    "expected_path": "pep_high_risk",
+    "notes": "PEP match \u2014 former diplomat is a domestic PEP, requires enhanced due diligence"
+  },
+  {
+    "id": "client_005",
+    "name": "Aisha Mohammed",
+    "date_of_birth": "2009-01-30",
+    "address": "89 Bloor Street East, Toronto, ON M4W 1A9",
+    "citizenship": "Canadian",
+    "occupation": "Student",
+    "employer": "N/A",
+    "account_type": "TFSA",
+    "source_of_funds": "Gift from parents",
+    "id_document": {
+      "type": "Ontario Health Card",
+      "number": "HC1122334",
+      "issuing_jurisdiction": "Ontario",
+      "expiry_date": "2030-06-15"
+    },
+    "expected_path": "minor_special_case",
+    "notes": "Minor (under 18) \u2014 special handling required, parent/guardian must be verified instead"
+  }
+]

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_KYC"
+                  targetNamespace="http://wealthsimple.com/bpmn/kyc">
+
+  <bpmn:process id="kyc_verification" name="Client Identity Verification - FINTRAC KYC" isExecutable="true">
+
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="lane_system" name="System (Automated)">
+        <bpmn:flowNodeRef>start_event</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>retrieve_application</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>screen_sanctions_pep</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>assess_risk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>credit_bureau_check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>create_compliance_record</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end_event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="lane_compliance" name="Compliance Officer">
+        <bpmn:flowNodeRef>gw_risk_level</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>enhanced_due_diligence</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gw_verification_method</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>verify_photo_id</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>dual_process_verify</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gw_identity_confirmed</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="lane_senior" name="Senior Compliance Officer">
+        <bpmn:flowNodeRef>escalate_senior</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <!-- START -->
+    <bpmn:startEvent id="start_event" name="New Client Application Received">
+      <bpmn:outgoing>flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- STEP 1: Retrieve Application Data -->
+    <bpmn:serviceTask id="retrieve_application" name="Retrieve Client Application Data">
+      <bpmn:incoming>flow_1</bpmn:incoming>
+      <bpmn:outgoing>flow_2</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- STEP 2: Screen Against Sanctions & PEP -->
+    <bpmn:serviceTask id="screen_sanctions_pep" name="Screen Against Sanctions and PEP Lists">
+      <bpmn:incoming>flow_2</bpmn:incoming>
+      <bpmn:outgoing>flow_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- STEP 3: Assess Risk -->
+    <bpmn:serviceTask id="assess_risk" name="Assess Client Risk Level">
+      <bpmn:incoming>flow_3</bpmn:incoming>
+      <bpmn:outgoing>flow_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- GATEWAY: High Risk? -->
+    <bpmn:exclusiveGateway id="gw_risk_level" name="Is Client High Risk?">
+      <bpmn:incoming>flow_4</bpmn:incoming>
+      <bpmn:outgoing>flow_high_risk</bpmn:outgoing>
+      <bpmn:outgoing>flow_standard_risk</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- STEP 4: Enhanced Due Diligence -->
+    <bpmn:userTask id="enhanced_due_diligence" name="Perform Enhanced Due Diligence">
+      <bpmn:incoming>flow_high_risk</bpmn:incoming>
+      <bpmn:outgoing>flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- GATEWAY: Verification Method -->
+    <bpmn:exclusiveGateway id="gw_verification_method" name="Select Verification Method">
+      <bpmn:incoming>flow_standard_risk</bpmn:incoming>
+      <bpmn:incoming>flow_5</bpmn:incoming>
+      <bpmn:outgoing>flow_photo_id</bpmn:outgoing>
+      <bpmn:outgoing>flow_credit_file</bpmn:outgoing>
+      <bpmn:outgoing>flow_dual_process</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- STEP 6: Verify Photo ID -->
+    <bpmn:userTask id="verify_photo_id" name="Verify Government-Issued Photo ID">
+      <bpmn:incoming>flow_photo_id</bpmn:incoming>
+      <bpmn:outgoing>flow_6a</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- STEP 7: Credit Bureau Check -->
+    <bpmn:serviceTask id="credit_bureau_check" name="Run Credit Bureau Verification">
+      <bpmn:incoming>flow_credit_file</bpmn:incoming>
+      <bpmn:outgoing>flow_6b</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- STEP 8: Dual Process -->
+    <bpmn:userTask id="dual_process_verify" name="Conduct Dual-Process Verification">
+      <bpmn:incoming>flow_dual_process</bpmn:incoming>
+      <bpmn:outgoing>flow_6c</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- GATEWAY: Identity Confirmed? -->
+    <bpmn:exclusiveGateway id="gw_identity_confirmed" name="Identity Verified Successfully?">
+      <bpmn:incoming>flow_6a</bpmn:incoming>
+      <bpmn:incoming>flow_6b</bpmn:incoming>
+      <bpmn:incoming>flow_6c</bpmn:incoming>
+      <bpmn:outgoing>flow_verified_yes</bpmn:outgoing>
+      <bpmn:outgoing>flow_verified_no</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- STEP 9: Create Compliance Record -->
+    <bpmn:serviceTask id="create_compliance_record" name="Create Compliance Record and Open Account">
+      <bpmn:incoming>flow_verified_yes</bpmn:incoming>
+      <bpmn:outgoing>flow_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- STEP 10: Escalate -->
+    <bpmn:userTask id="escalate_senior" name="Escalate to Senior Compliance Officer">
+      <bpmn:incoming>flow_verified_no</bpmn:incoming>
+      <bpmn:outgoing>flow_end_escalate</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- END -->
+    <bpmn:endEvent id="end_event" name="Process Complete">
+      <bpmn:incoming>flow_end</bpmn:incoming>
+      <bpmn:incoming>flow_end_escalate</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- SEQUENCE FLOWS -->
+    <bpmn:sequenceFlow id="flow_1" sourceRef="start_event" targetRef="retrieve_application"/>
+    <bpmn:sequenceFlow id="flow_2" sourceRef="retrieve_application" targetRef="screen_sanctions_pep"/>
+    <bpmn:sequenceFlow id="flow_3" sourceRef="screen_sanctions_pep" targetRef="assess_risk"/>
+    <bpmn:sequenceFlow id="flow_4" sourceRef="assess_risk" targetRef="gw_risk_level"/>
+
+    <bpmn:sequenceFlow id="flow_high_risk" name="Yes — High Risk" sourceRef="gw_risk_level" targetRef="enhanced_due_diligence"/>
+    <bpmn:sequenceFlow id="flow_standard_risk" name="No — Standard Risk" sourceRef="gw_risk_level" targetRef="gw_verification_method"/>
+
+    <bpmn:sequenceFlow id="flow_5" sourceRef="enhanced_due_diligence" targetRef="gw_verification_method"/>
+
+    <bpmn:sequenceFlow id="flow_photo_id" name="Government Photo ID" sourceRef="gw_verification_method" targetRef="verify_photo_id"/>
+    <bpmn:sequenceFlow id="flow_credit_file" name="Credit File" sourceRef="gw_verification_method" targetRef="credit_bureau_check"/>
+    <bpmn:sequenceFlow id="flow_dual_process" name="Dual Process" sourceRef="gw_verification_method" targetRef="dual_process_verify"/>
+
+    <bpmn:sequenceFlow id="flow_6a" sourceRef="verify_photo_id" targetRef="gw_identity_confirmed"/>
+    <bpmn:sequenceFlow id="flow_6b" sourceRef="credit_bureau_check" targetRef="gw_identity_confirmed"/>
+    <bpmn:sequenceFlow id="flow_6c" sourceRef="dual_process_verify" targetRef="gw_identity_confirmed"/>
+
+    <bpmn:sequenceFlow id="flow_verified_yes" name="Yes — Verified" sourceRef="gw_identity_confirmed" targetRef="create_compliance_record"/>
+    <bpmn:sequenceFlow id="flow_verified_no" name="No — Failed" sourceRef="gw_identity_confirmed" targetRef="escalate_senior"/>
+
+    <bpmn:sequenceFlow id="flow_end" sourceRef="create_compliance_record" targetRef="end_event"/>
+    <bpmn:sequenceFlow id="flow_end_escalate" sourceRef="escalate_senior" targetRef="end_event"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="kyc_verification">
+
+      <!-- Lanes -->
+      <bpmndi:BPMNShape id="lane_system_di" bpmnElement="lane_system" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1560" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_compliance_di" bpmnElement="lane_compliance" isHorizontal="true">
+        <dc:Bounds x="160" y="330" width="1560" height="310" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="lane_senior_di" bpmnElement="lane_senior" isHorizontal="true">
+        <dc:Bounds x="160" y="640" width="1560" height="160" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="start_event_di" bpmnElement="start_event">
+        <dc:Bounds x="212" y="187" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="190" y="230" width="80" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Retrieve Application -->
+      <bpmndi:BPMNShape id="retrieve_application_di" bpmnElement="retrieve_application">
+        <dc:Bounds x="310" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Screen Sanctions -->
+      <bpmndi:BPMNShape id="screen_sanctions_pep_di" bpmnElement="screen_sanctions_pep">
+        <dc:Bounds x="470" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Assess Risk -->
+      <bpmndi:BPMNShape id="assess_risk_di" bpmnElement="assess_risk">
+        <dc:Bounds x="630" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway: Risk Level -->
+      <bpmndi:BPMNShape id="gw_risk_level_di" bpmnElement="gw_risk_level" isMarkerVisible="true">
+        <dc:Bounds x="775" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="835" y="470" width="80" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Enhanced Due Diligence -->
+      <bpmndi:BPMNShape id="enhanced_due_diligence_di" bpmnElement="enhanced_due_diligence">
+        <dc:Bounds x="750" y="355" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway: Verification Method -->
+      <bpmndi:BPMNShape id="gw_verification_method_di" bpmnElement="gw_verification_method" isMarkerVisible="true">
+        <dc:Bounds x="925" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="985" y="470" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Verify Photo ID -->
+      <bpmndi:BPMNShape id="verify_photo_id_di" bpmnElement="verify_photo_id">
+        <dc:Bounds x="1050" y="355" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Credit Bureau Check -->
+      <bpmndi:BPMNShape id="credit_bureau_check_di" bpmnElement="credit_bureau_check">
+        <dc:Bounds x="1050" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Dual Process Verify -->
+      <bpmndi:BPMNShape id="dual_process_verify_di" bpmnElement="dual_process_verify">
+        <dc:Bounds x="1050" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway: Identity Confirmed -->
+      <bpmndi:BPMNShape id="gw_identity_confirmed_di" bpmnElement="gw_identity_confirmed" isMarkerVisible="true">
+        <dc:Bounds x="1225" y="455" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1285" y="470" width="90" height="28" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Create Compliance Record -->
+      <bpmndi:BPMNShape id="create_compliance_record_di" bpmnElement="create_compliance_record">
+        <dc:Bounds x="1370" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Escalate Senior -->
+      <bpmndi:BPMNShape id="escalate_senior_di" bpmnElement="escalate_senior">
+        <dc:Bounds x="1370" y="680" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Event -->
+      <bpmndi:BPMNShape id="end_event_di" bpmnElement="end_event">
+        <dc:Bounds x="1572" y="187" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1555" y="230" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows (edges) -->
+      <bpmndi:BPMNEdge id="flow_1_di" bpmnElement="flow_1">
+        <di:waypoint x="248" y="205" />
+        <di:waypoint x="310" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_2_di" bpmnElement="flow_2">
+        <di:waypoint x="410" y="205" />
+        <di:waypoint x="470" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_3_di" bpmnElement="flow_3">
+        <di:waypoint x="570" y="205" />
+        <di:waypoint x="630" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_4_di" bpmnElement="flow_4">
+        <di:waypoint x="730" y="205" />
+        <di:waypoint x="800" y="205" />
+        <di:waypoint x="800" y="455" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_high_risk_di" bpmnElement="flow_high_risk">
+        <di:waypoint x="800" y="455" />
+        <di:waypoint x="800" y="435" />
+        <bpmndi:BPMNLabel><dc:Bounds x="805" y="438" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_standard_risk_di" bpmnElement="flow_standard_risk">
+        <di:waypoint x="825" y="480" />
+        <di:waypoint x="925" y="480" />
+        <bpmndi:BPMNLabel><dc:Bounds x="840" y="462" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_5_di" bpmnElement="flow_5">
+        <di:waypoint x="850" y="395" />
+        <di:waypoint x="950" y="395" />
+        <di:waypoint x="950" y="455" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_photo_id_di" bpmnElement="flow_photo_id">
+        <di:waypoint x="950" y="455" />
+        <di:waypoint x="950" y="395" />
+        <di:waypoint x="1050" y="395" />
+        <bpmndi:BPMNLabel><dc:Bounds x="960" y="378" width="85" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_credit_file_di" bpmnElement="flow_credit_file">
+        <di:waypoint x="950" y="455" />
+        <di:waypoint x="950" y="205" />
+        <di:waypoint x="1050" y="205" />
+        <bpmndi:BPMNLabel><dc:Bounds x="960" y="188" width="55" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_dual_process_di" bpmnElement="flow_dual_process">
+        <di:waypoint x="950" y="505" />
+        <di:waypoint x="950" y="575" />
+        <di:waypoint x="1050" y="575" />
+        <bpmndi:BPMNLabel><dc:Bounds x="960" y="558" width="65" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_6a_di" bpmnElement="flow_6a">
+        <di:waypoint x="1150" y="395" />
+        <di:waypoint x="1250" y="395" />
+        <di:waypoint x="1250" y="455" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6b_di" bpmnElement="flow_6b">
+        <di:waypoint x="1150" y="205" />
+        <di:waypoint x="1250" y="205" />
+        <di:waypoint x="1250" y="455" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_6c_di" bpmnElement="flow_6c">
+        <di:waypoint x="1150" y="575" />
+        <di:waypoint x="1250" y="575" />
+        <di:waypoint x="1250" y="505" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_verified_yes_di" bpmnElement="flow_verified_yes">
+        <di:waypoint x="1250" y="455" />
+        <di:waypoint x="1250" y="205" />
+        <di:waypoint x="1370" y="205" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1260" y="188" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_verified_no_di" bpmnElement="flow_verified_no">
+        <di:waypoint x="1250" y="505" />
+        <di:waypoint x="1250" y="720" />
+        <di:waypoint x="1370" y="720" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1260" y="703" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="flow_end_di" bpmnElement="flow_end">
+        <di:waypoint x="1470" y="205" />
+        <di:waypoint x="1572" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow_end_escalate_di" bpmnElement="flow_end_escalate">
+        <di:waypoint x="1470" y="720" />
+        <di:waypoint x="1590" y="720" />
+        <di:waypoint x="1590" y="223" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

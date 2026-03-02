@@ -1,0 +1,258 @@
+================================================================================
+STANDARD OPERATING PROCEDURE
+Client Identity Verification — FINTRAC Compliance
+================================================================================
+
+SOP ID:         WS-KYC-001
+Version:        2.1
+Effective Date: January 15, 2026
+Department:     Compliance & Operations
+Approved By:    Chief Compliance Officer
+Review Cycle:   Annually (next review: January 2027)
+Classification: Internal — Confidential
+
+================================================================================
+1. PURPOSE
+================================================================================
+
+This procedure establishes the steps required to verify the identity of new
+clients opening accounts with Wealthsimple, in compliance with the Proceeds of
+Crime (Money Laundering) and Terrorist Financing Act (PCMLTFA) and FINTRAC
+guidelines. All reporting entities registered as securities dealers must verify
+client identity before opening an account or conducting transactions.
+
+================================================================================
+2. SCOPE
+================================================================================
+
+This SOP applies to all Wealthsimple employees, agents, and automated systems
+involved in the client onboarding process, including:
+- Client-facing application intake
+- Identity verification operations
+- Compliance review and escalation
+- Record keeping and audit trail
+
+================================================================================
+3. PROCEDURE
+================================================================================
+
+STEP 1: Receive New Client Application
+---------------------------------------
+Owner: System (Automated)
+When a new client submits an account opening application through the
+Wealthsimple app or website, the system automatically captures:
+- Full legal name
+- Date of birth
+- Residential address
+- Citizenship / country of residence
+- Occupation and employer
+- Purpose of the account
+- Source of funds declaration
+
+The system validates that all mandatory fields are completed and stores the
+application in the onboarding queue.
+
+STEP 2: Screen Against Sanctions and PEP Lists
+-----------------------------------------------
+Owner: System (Automated)
+The system automatically screens the client against:
+- Canadian sanctions lists (OSFI consolidated list)
+- UN Security Council sanctions lists
+- Politically Exposed Persons (PEP) databases — both domestic and foreign
+- Heads of International Organizations (HIO) lists
+- FINTRAC advisories and intelligence reports
+
+The screening must be completed before any account is opened. Results are logged
+with timestamp, source database version, and match confidence scores.
+
+STEP 3: Assess Client Risk Level
+---------------------------------
+Owner: System (Automated)
+Based on the screening results and client profile, the system assigns an initial
+risk rating:
+
+HIGH RISK indicators:
+- PEP or HIO match (domestic or foreign)
+- Sanctions list partial match
+- Client from high-risk jurisdiction (as per FATF grey/black list)
+- Unusual source of funds (e.g., cash-intensive business)
+- Client is a trust, nominee, or legal arrangement
+
+STANDARD RISK:
+- No adverse screening results
+- Canadian resident with standard employment
+- Common account types (TFSA, RRSP, non-registered)
+
+DECISION: Is the client flagged as high risk?
+- If YES → proceed to Step 4 (Enhanced Due Diligence)
+- If NO → proceed to Step 5 (Standard Identity Verification)
+
+STEP 4: Perform Enhanced Due Diligence (EDD)
+---------------------------------------------
+Owner: Compliance Officer (Human)
+For high-risk clients, a compliance officer must:
+a) Review the screening results and risk assessment manually
+b) Obtain additional information about the client's source of funds and source
+   of wealth
+c) Determine the purpose and intended nature of the business relationship
+d) Search public databases, news sources, and the internet for adverse
+   information about the client
+e) Document the rationale for proceeding or declining the application
+f) Obtain approval from the Senior Compliance Officer before proceeding
+
+If the compliance officer determines the risk is unacceptable, the application
+is declined and the client is notified. A record of the decision and rationale
+must be kept for at least 5 years.
+
+After completing EDD, proceed to Step 5.
+
+STEP 5: Verify Client Identity — Select Method
+------------------------------------------------
+Owner: System / Compliance Officer
+The client's identity must be verified using one of the following FINTRAC-
+approved methods. The method selection depends on whether the client is
+onboarding digitally or in-person:
+
+DIGITAL ONBOARDING (primary method for Wealthsimple):
+→ Use the Government-Issued Photo ID Method (Step 6)
+
+ALTERNATIVE METHODS (if photo ID method is not feasible):
+→ Credit File Method — verify identity using Canadian credit bureau data
+→ Dual-Process Method — use two independent sources from different categories
+
+DECISION: Which verification method is being used?
+- Government Photo ID → proceed to Step 6
+- Credit File → proceed to Step 7
+- Dual Process → proceed to Step 8
+
+STEP 6: Government-Issued Photo Identification Method
+------------------------------------------------------
+Owner: System + Compliance Officer (Hybrid)
+This is the primary verification method for digital onboarding:
+
+a) The client uploads or presents a valid, original, government-issued photo
+   identification document. Acceptable documents include:
+   - Canadian passport
+   - Canadian driver's licence (provincial/territorial)
+   - Canadian permanent resident card
+   - Provincial/territorial health card (where permitted for ID purposes)
+   - Canadian citizenship card (issued before 2012 with photo)
+   - Foreign passport
+
+b) The system uses automated document verification to:
+   - Confirm the document is authentic (not altered or forged)
+   - Extract the client's name, date of birth, and photo
+   - Perform liveness detection to confirm the client is a real person
+   - Match the photo on the document to the client's selfie
+
+c) A compliance officer reviews the automated verification results and confirms:
+   - The name on the document matches the application
+   - The document is not expired
+   - The photo matches the client
+   - There are no signs of tampering or forgery
+
+d) Record the following information:
+   - Type of document
+   - Document number
+   - Issuing jurisdiction
+   - Expiry date
+   - Date of verification
+   - Name of the person who verified the identity
+
+DECISION: Was the identity successfully verified?
+- If YES → proceed to Step 9 (Create Compliance Record)
+- If NO → proceed to Step 10 (Escalate to Senior Compliance)
+
+STEP 7: Credit File Method
+---------------------------
+Owner: System (Automated)
+This method verifies identity by matching client information against Canadian
+credit bureau records:
+
+a) The system queries a Canadian credit bureau (Equifax or TransUnion)
+b) The credit file must have existed for at least 3 years
+c) The system verifies that the following information matches:
+   - Client's full name
+   - Date of birth
+   - Address
+   - At least one additional data point (e.g., SIN partial match)
+d) Record the name of the credit bureau, date of query, and results
+
+DECISION: Was the identity successfully verified?
+- If YES → proceed to Step 9
+- If NO → proceed to Step 10
+
+STEP 8: Dual-Process Method
+-----------------------------
+Owner: Compliance Officer (Human)
+This method uses two independent sources from different categories:
+
+Category A — Government-issued ID (no photo required):
+- Birth certificate, marriage certificate, CRA documents
+
+Category B — Financial records:
+- Bank statement, credit card statement, mortgage documents
+
+Category C — Utility or institutional records:
+- Utility bill, insurance policy, educational transcript
+
+a) Obtain one document from two different categories
+b) Verify that the name on both documents matches the application
+c) Confirm at least one additional identifier (DOB or address) appears on
+   at least one document
+d) Record both document types, dates, and verification details
+
+DECISION: Was the identity successfully verified?
+- If YES → proceed to Step 9
+- If NO → proceed to Step 10
+
+STEP 9: Create Compliance Record and Open Account
+--------------------------------------------------
+Owner: System (Automated)
+Upon successful identity verification:
+a) Create a verification record containing:
+   - Method used for verification
+   - Documents reviewed and their details
+   - Name of the individual who verified identity (if applicable)
+   - Date and time of verification
+   - Risk rating assigned
+   - Whether EDD was performed and its outcome
+b) Store the record in the compliance database
+c) Set the verification expiry reminder (re-verify based on risk level)
+d) Open the client's account(s)
+e) Send confirmation to the client
+
+All records must be retained for at least 5 years after the business
+relationship ends, as required by FINTRAC.
+
+STEP 10: Escalate to Senior Compliance Officer
+------------------------------------------------
+Owner: Senior Compliance Officer (Human)
+When identity verification fails or cannot be completed:
+a) The case is escalated to the Senior Compliance Officer
+b) Review the verification attempt details and failure reason
+c) Determine whether:
+   - An alternative verification method should be attempted
+   - Additional documents should be requested from the client
+   - The application should be declined
+   - A Suspicious Transaction Report (STR) should be filed with FINTRAC
+d) Document the decision and rationale
+e) If declined, notify the client without disclosing that an STR may be filed
+   (tipping off is prohibited under the PCMLTFA)
+
+================================================================================
+4. RECORD KEEPING
+================================================================================
+
+All verification records, screening results, risk assessments, and decisions
+must be retained for a minimum of 5 years after the last transaction or the end
+of the business relationship, whichever is later.
+
+================================================================================
+5. REFERENCES
+================================================================================
+
+- FINTRAC Guideline 11: Verifying the Identity of Persons and Entities
+- FINTRAC Guideline 4: Compliance Program Requirements
+- Proceeds of Crime (Money Laundering) and Terrorist Financing Act (PCMLTFA)
+- CIRO (formerly IIROC) Rule 3100: Client Accounts

@@ -1,0 +1,35 @@
+You are a compliance training instructor. Generate a realistic training scenario for a KYC identity verification workflow.
+
+You will be given the workflow steps. Create a scenario that tests the trainee's understanding of the procedure.
+
+Return a JSON object with:
+
+{
+  "scenario_title": "A descriptive title for this training scenario",
+  "scenario_description": "A 2-3 sentence narrative setting the scene",
+  "client": {
+    "name": "Fictional client name",
+    "date_of_birth": "YYYY-MM-DD",
+    "citizenship": "Country",
+    "occupation": "Job title",
+    "employer": "Company name",
+    "account_type": "Account type",
+    "source_of_funds": "Where the money comes from",
+    "id_document_type": "Type of ID presented",
+    "id_document_number": "Document number",
+    "id_expiry": "YYYY-MM-DD",
+    "special_circumstances": "Any complicating factors"
+  },
+  "expected_risk_level": "standard | high",
+  "expected_verification_method": "photo_id | credit_file | dual_process",
+  "expected_outcome": "approved | escalated | declined",
+  "key_learning_points": ["List of 2-3 compliance concepts this scenario tests"],
+  "trick_elements": ["List of 1-2 subtle things the trainee should catch"]
+}
+
+RULES:
+- Make scenarios varied: include straightforward cases, PEP matches, expired documents, high-risk jurisdictions, unusual sources of funds
+- Include subtle compliance traps that test real understanding (not just following steps)
+- Base scenarios on realistic Canadian fintech situations
+- Each scenario should test different parts of the workflow
+- Vary the difficulty: some should be easy, some should require careful analysis

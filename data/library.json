@@ -1,0 +1,795 @@
+[
+  {
+    "id": "2c8f4972",
+    "name": "Client Identity Verification \u2014 FINTRAC Compliance",
+    "source_format": "text",
+    "step_count": 11,
+    "saved_at": "2026-03-01T19:02:14.773665",
+    "workflow": {
+      "name": "Client Identity Verification \u2014 FINTRAC Compliance",
+      "description": "This procedure establishes the steps required to verify the identity of new clients opening accounts with Wealthsimple, in compliance with the Proceeds of Crime (Money Laundering) and Terrorist Financing Act (PCMLTFA) and FINTRAC guidelines.",
+      "source_format": "text",
+      "start_step_id": "receive_new_client_application",
+      "steps": [
+        {
+          "id": "receive_new_client_application",
+          "title": "Receive New Client Application",
+          "description": "When a new client submits an account opening application through the Wealthsimple app or website, the system automatically captures the client's information and stores the application in the onboarding queue.",
+          "type": "AUTO",
+          "owner": "System",
+          "next_steps": [
+            "screen_against_sanctions_and_pep_lists"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "screen_against_sanctions_and_pep_lists",
+          "title": "Screen Against Sanctions and PEP Lists",
+          "description": "The system automatically screens the client against various sanctions and PEP lists, logging the results with relevant details.",
+          "type": "AUTO",
+          "owner": "System",
+          "next_steps": [
+            "assess_client_risk_level"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "assess_client_risk_level",
+          "title": "Assess Client Risk Level",
+          "description": "Based on the screening results and client profile, the system assigns an initial risk rating and determines if the client is flagged as high risk.",
+          "type": "DECISION",
+          "owner": "System",
+          "next_steps": [],
+          "branches": {
+            "Yes": "perform_enhanced_due_diligence",
+            "No": "verify_client_identity_select_method"
+          }
+        },
+        {
+          "id": "perform_enhanced_due_diligence",
+          "title": "Perform Enhanced Due Diligence (EDD)",
+          "description": "For high-risk clients, a compliance officer reviews the screening results, obtains additional information, and documents the rationale for proceeding or declining the application.",
+          "type": "HUMAN",
+          "owner": "Compliance Officer",
+          "next_steps": [
+            "verify_client_identity_select_method"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "verify_client_identity_select_method",
+          "title": "Verify Client Identity \u2014 Select Method",
+          "description": "The client's identity must be verified using one of the FINTRAC-approved methods based on whether the client is onboarding digitally or in-person.",
+          "type": "DECISION",
+          "owner": "System / Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Government Photo ID": "government_issued_photo_identification_method",
+            "Credit File": "credit_file_method",
+            "Dual Process": "dual_process_method"
+          }
+        },
+        {
+          "id": "government_issued_photo_identification_method",
+          "title": "Government-Issued Photo Identification Method",
+          "description": "The client uploads a valid government-issued photo ID, which is verified by the system and reviewed by a compliance officer.",
+          "type": "HUMAN",
+          "owner": "System + Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Yes": "create_compliance_record_and_open_account",
+            "No": "escalate_to_senior_compliance_officer"
+          }
+        },
+        {
+          "id": "credit_file_method",
+          "title": "Credit File Method",
+          "description": "The system verifies the client's identity by matching information against Canadian credit bureau records.",
+          "type": "AUTO",
+          "owner": "System",
+          "next_steps": [],
+          "branches": {
+            "Yes": "create_compliance_record_and_open_account",
+            "No": "escalate_to_senior_compliance_officer"
+          }
+        },
+        {
+          "id": "dual_process_method",
+          "title": "Dual-Process Method",
+          "description": "This method uses two independent sources from different categories to verify the client's identity.",
+          "type": "HUMAN",
+          "owner": "Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Yes": "create_compliance_record_and_open_account",
+            "No": "escalate_to_senior_compliance_officer"
+          }
+        },
+        {
+          "id": "create_compliance_record_and_open_account",
+          "title": "Create Compliance Record and Open Account",
+          "description": "Upon successful identity verification, a verification record is created, stored, and the client's account is opened.",
+          "type": "AUTO",
+          "owner": "System",
+          "next_steps": [
+            "end"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "escalate_to_senior_compliance_officer",
+          "title": "Escalate to Senior Compliance Officer",
+          "description": "When identity verification fails, the case is escalated to the Senior Compliance Officer for further review and decision-making.",
+          "type": "HUMAN",
+          "owner": "Senior Compliance Officer",
+          "next_steps": [
+            "end"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "end",
+          "title": "End of Procedure",
+          "description": "The procedure concludes here, with all necessary actions taken based on the verification outcome.",
+          "type": "END",
+          "owner": "",
+          "next_steps": [],
+          "branches": {}
+        }
+      ]
+    },
+    "step_configs": {
+      "receive_new_client_application": {
+        "tool_type": "AI Prompt",
+        "description": "When a new client submits an account opening application through the Wealthsimple app or website, the system automatically captures the client's information and stores the application in the onboarding queue.",
+        "prompt_template": "Analyze the client data and execute: Receive New Client Application.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "screen_against_sanctions_and_pep_lists": {
+        "tool_type": "AI Prompt",
+        "description": "The system automatically screens the client against various sanctions and PEP lists, logging the results with relevant details.",
+        "prompt_template": "Analyze the client data and execute: Screen Against Sanctions and PEP Lists.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "assess_client_risk_level": {
+        "tool_type": "Decision Gate",
+        "description": "Based on the screening results and client profile, the system assigns an initial risk rating and determines if the client is flagged as high risk.",
+        "prompt_template": "Evaluate the condition: Assess Client Risk Level.\nBased on previous step results and client data, determine the appropriate branch.\nOptions: Yes, No",
+        "input_fields": [
+          "previous_results",
+          "flags",
+          "risk_level"
+        ],
+        "output_fields": [
+          "decision",
+          "reasoning"
+        ]
+      },
+      "perform_enhanced_due_diligence": {
+        "tool_type": "Human Review",
+        "description": "For high-risk clients, a compliance officer reviews the screening results, obtains additional information, and documents the rationale for proceeding or declining the application.",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "verify_client_identity_select_method": {
+        "tool_type": "Decision Gate",
+        "description": "The client's identity must be verified using one of the FINTRAC-approved methods based on whether the client is onboarding digitally or in-person.",
+        "prompt_template": "Evaluate the condition: Verify Client Identity \u2014 Select Method.\nBased on previous step results and client data, determine the appropriate branch.\nOptions: Government Photo ID, Credit File, Dual Process",
+        "input_fields": [
+          "previous_results",
+          "flags",
+          "risk_level"
+        ],
+        "output_fields": [
+          "decision",
+          "reasoning"
+        ]
+      },
+      "government_issued_photo_identification_method": {
+        "tool_type": "Human Review",
+        "description": "The client uploads a valid government-issued photo ID, which is verified by the system and reviewed by a compliance officer.",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "credit_file_method": {
+        "tool_type": "AI Prompt",
+        "description": "The system verifies the client's identity by matching information against Canadian credit bureau records.",
+        "prompt_template": "Analyze the client data and execute: Credit File Method.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "dual_process_method": {
+        "tool_type": "Human Review",
+        "description": "This method uses two independent sources from different categories to verify the client's identity.",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "create_compliance_record_and_open_account": {
+        "tool_type": "AI Prompt",
+        "description": "Upon successful identity verification, a verification record is created, stored, and the client's account is opened.",
+        "prompt_template": "Analyze the client data and execute: Create Compliance Record and Open Account.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "escalate_to_senior_compliance_officer": {
+        "tool_type": "Human Review",
+        "description": "When identity verification fails, the case is escalated to the Senior Compliance Officer for further review and decision-making.",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "end": {
+        "tool_type": "None",
+        "description": "The procedure concludes here, with all necessary actions taken based on the verification outcome.",
+        "prompt_template": "",
+        "input_fields": [],
+        "output_fields": []
+      }
+    },
+    "case_input_config": {
+      "type": "Client Profile",
+      "fields": [
+        {
+          "name": "Name",
+          "type": "Text"
+        },
+        {
+          "name": "Date of Birth",
+          "type": "Date"
+        },
+        {
+          "name": "Address",
+          "type": "Text"
+        },
+        {
+          "name": "Citizenship",
+          "type": "Text"
+        },
+        {
+          "name": "Occupation",
+          "type": "Text"
+        },
+        {
+          "name": "Employer",
+          "type": "Text"
+        },
+        {
+          "name": "Account Type",
+          "type": "Select"
+        },
+        {
+          "name": "Source of Funds",
+          "type": "Text"
+        },
+        {
+          "name": "ID Document",
+          "type": "Text"
+        },
+        {
+          "name": "Notes",
+          "type": "Text"
+        }
+      ],
+      "_last_type": "Client Profile"
+    }
+  },
+  {
+    "id": "038c459f",
+    "name": "Client Identity Verification - FINTRAC KYC",
+    "source_format": "bpmn",
+    "step_count": 14,
+    "saved_at": "2026-03-01T19:03:00.910381",
+    "workflow": {
+      "name": "Client Identity Verification - FINTRAC KYC",
+      "description": "Imported from BPMN file",
+      "source_format": "bpmn",
+      "start_step_id": "start_event",
+      "steps": [
+        {
+          "id": "start_event",
+          "title": "New Client Application Received",
+          "description": "BPMN startEvent: New Client Application Received",
+          "type": "START",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "retrieve_application"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "end_event",
+          "title": "Process Complete",
+          "description": "BPMN endEvent: Process Complete",
+          "type": "END",
+          "owner": "System (Automated)",
+          "next_steps": [],
+          "branches": {}
+        },
+        {
+          "id": "enhanced_due_diligence",
+          "title": "Perform Enhanced Due Diligence",
+          "description": "BPMN userTask: Perform Enhanced Due Diligence",
+          "type": "HUMAN",
+          "owner": "Compliance Officer",
+          "next_steps": [
+            "gw_verification_method"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "verify_photo_id",
+          "title": "Verify Government-Issued Photo ID",
+          "description": "BPMN userTask: Verify Government-Issued Photo ID",
+          "type": "HUMAN",
+          "owner": "Compliance Officer",
+          "next_steps": [
+            "gw_identity_confirmed"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "dual_process_verify",
+          "title": "Conduct Dual-Process Verification",
+          "description": "BPMN userTask: Conduct Dual-Process Verification",
+          "type": "HUMAN",
+          "owner": "Compliance Officer",
+          "next_steps": [
+            "gw_identity_confirmed"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "escalate_senior",
+          "title": "Escalate to Senior Compliance Officer",
+          "description": "BPMN userTask: Escalate to Senior Compliance Officer",
+          "type": "HUMAN",
+          "owner": "Senior Compliance Officer",
+          "next_steps": [
+            "end_event"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "retrieve_application",
+          "title": "Retrieve Client Application Data",
+          "description": "BPMN serviceTask: Retrieve Client Application Data",
+          "type": "AUTO",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "screen_sanctions_pep"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "screen_sanctions_pep",
+          "title": "Screen Against Sanctions and PEP Lists",
+          "description": "BPMN serviceTask: Screen Against Sanctions and PEP Lists",
+          "type": "AUTO",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "assess_risk"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "assess_risk",
+          "title": "Assess Client Risk Level",
+          "description": "BPMN serviceTask: Assess Client Risk Level",
+          "type": "AUTO",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "gw_risk_level"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "credit_bureau_check",
+          "title": "Run Credit Bureau Verification",
+          "description": "BPMN serviceTask: Run Credit Bureau Verification",
+          "type": "AUTO",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "gw_identity_confirmed"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "create_compliance_record",
+          "title": "Create Compliance Record and Open Account",
+          "description": "BPMN serviceTask: Create Compliance Record and Open Account",
+          "type": "AUTO",
+          "owner": "System (Automated)",
+          "next_steps": [
+            "end_event"
+          ],
+          "branches": {}
+        },
+        {
+          "id": "gw_risk_level",
+          "title": "Is Client High Risk?",
+          "description": "BPMN exclusiveGateway: Is Client High Risk?",
+          "type": "DECISION",
+          "owner": "Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Yes \u2014 High Risk": "enhanced_due_diligence",
+            "No \u2014 Standard Risk": "gw_verification_method"
+          }
+        },
+        {
+          "id": "gw_verification_method",
+          "title": "Select Verification Method",
+          "description": "BPMN exclusiveGateway: Select Verification Method",
+          "type": "DECISION",
+          "owner": "Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Government Photo ID": "verify_photo_id",
+            "Credit File": "credit_bureau_check",
+            "Dual Process": "dual_process_verify"
+          }
+        },
+        {
+          "id": "gw_identity_confirmed",
+          "title": "Identity Verified Successfully?",
+          "description": "BPMN exclusiveGateway: Identity Verified Successfully?",
+          "type": "DECISION",
+          "owner": "Compliance Officer",
+          "next_steps": [],
+          "branches": {
+            "Yes \u2014 Verified": "create_compliance_record",
+            "No \u2014 Failed": "escalate_senior"
+          }
+        }
+      ]
+    },
+    "step_configs": {
+      "start_event": {
+        "tool_type": "None",
+        "description": "BPMN startEvent: New Client Application Received",
+        "prompt_template": "",
+        "input_fields": [],
+        "output_fields": []
+      },
+      "end_event": {
+        "tool_type": "None",
+        "description": "BPMN endEvent: Process Complete",
+        "prompt_template": "",
+        "input_fields": [],
+        "output_fields": []
+      },
+      "enhanced_due_diligence": {
+        "tool_type": "Human Review",
+        "description": "BPMN userTask: Perform Enhanced Due Diligence",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "verify_photo_id": {
+        "tool_type": "Human Review",
+        "description": "BPMN userTask: Verify Government-Issued Photo ID",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "dual_process_verify": {
+        "tool_type": "Human Review",
+        "description": "BPMN userTask: Conduct Dual-Process Verification",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "escalate_senior": {
+        "tool_type": "Human Review",
+        "description": "BPMN userTask: Escalate to Senior Compliance Officer",
+        "prompt_template": "",
+        "input_fields": [
+          "client_data",
+          "previous_results",
+          "flags"
+        ],
+        "output_fields": [
+          "decision",
+          "action_taken",
+          "notes"
+        ],
+        "form_fields": [
+          "Action taken (text)",
+          "Notes (text)",
+          "Decision (select: Approved / Needs Follow-up / Rejected)"
+        ]
+      },
+      "retrieve_application": {
+        "tool_type": "AI Prompt",
+        "description": "BPMN serviceTask: Retrieve Client Application Data",
+        "prompt_template": "Analyze the client data and execute: Retrieve Client Application Data.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "screen_sanctions_pep": {
+        "tool_type": "AI Prompt",
+        "description": "BPMN serviceTask: Screen Against Sanctions and PEP Lists",
+        "prompt_template": "Analyze the client data and execute: Screen Against Sanctions and PEP Lists.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "assess_risk": {
+        "tool_type": "AI Prompt",
+        "description": "BPMN serviceTask: Assess Client Risk Level",
+        "prompt_template": "Analyze the client data and execute: Assess Client Risk Level.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "credit_bureau_check": {
+        "tool_type": "AI Prompt",
+        "description": "BPMN serviceTask: Run Credit Bureau Verification",
+        "prompt_template": "Analyze the client data and execute: Run Credit Bureau Verification.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "create_compliance_record": {
+        "tool_type": "AI Prompt",
+        "description": "BPMN serviceTask: Create Compliance Record and Open Account",
+        "prompt_template": "Analyze the client data and execute: Create Compliance Record and Open Account.\nConsider all relevant compliance requirements.\nReturn a JSON object with result, data_gathered, flags, and status fields.",
+        "input_fields": [
+          "client_data",
+          "previous_results"
+        ],
+        "output_fields": [
+          "result",
+          "data_gathered",
+          "flags",
+          "status"
+        ]
+      },
+      "gw_risk_level": {
+        "tool_type": "Decision Gate",
+        "description": "BPMN exclusiveGateway: Is Client High Risk?",
+        "prompt_template": "Evaluate the condition: Is Client High Risk?.\nBased on previous step results and client data, determine the appropriate branch.\nOptions: Yes \u2014 High Risk, No \u2014 Standard Risk",
+        "input_fields": [
+          "previous_results",
+          "flags",
+          "risk_level"
+        ],
+        "output_fields": [
+          "decision",
+          "reasoning"
+        ]
+      },
+      "gw_verification_method": {
+        "tool_type": "Decision Gate",
+        "description": "BPMN exclusiveGateway: Select Verification Method",
+        "prompt_template": "Evaluate the condition: Select Verification Method.\nBased on previous step results and client data, determine the appropriate branch.\nOptions: Government Photo ID, Credit File, Dual Process",
+        "input_fields": [
+          "previous_results",
+          "flags",
+          "risk_level"
+        ],
+        "output_fields": [
+          "decision",
+          "reasoning"
+        ]
+      },
+      "gw_identity_confirmed": {
+        "tool_type": "Decision Gate",
+        "description": "BPMN exclusiveGateway: Identity Verified Successfully?",
+        "prompt_template": "Evaluate the condition: Identity Verified Successfully?.\nBased on previous step results and client data, determine the appropriate branch.\nOptions: Yes \u2014 Verified, No \u2014 Failed",
+        "input_fields": [
+          "previous_results",
+          "flags",
+          "risk_level"
+        ],
+        "output_fields": [
+          "decision",
+          "reasoning"
+        ]
+      }
+    },
+    "case_input_config": {
+      "type": "Client Profile",
+      "fields": [
+        {
+          "name": "Name",
+          "type": "Text"
+        },
+        {
+          "name": "Date of Birth",
+          "type": "Date"
+        },
+        {
+          "name": "Address",
+          "type": "Text"
+        },
+        {
+          "name": "Citizenship",
+          "type": "Text"
+        },
+        {
+          "name": "Occupation",
+          "type": "Text"
+        },
+        {
+          "name": "Employer",
+          "type": "Text"
+        },
+        {
+          "name": "Account Type",
+          "type": "Select"
+        },
+        {
+          "name": "Source of Funds",
+          "type": "Text"
+        },
+        {
+          "name": "ID Document",
+          "type": "Text"
+        },
+        {
+          "name": "Notes",
+          "type": "Text"
+        }
+      ],
+      "_last_type": "Client Profile"
+    }
+  }
+]
