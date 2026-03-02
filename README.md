@@ -2,8 +2,6 @@
 
 **AI-Native SOP Execution Engine** — Parse, execute, and train on Standard Operating Procedures.
 
-Built for the [Wealthsimple AI Builder](https://jobs.ashbyhq.com/wealthsimple/f7e4d9e1-2774-4a21-99b6-02e1e4120cef) application.
-
 ---
 
 ## What it does
