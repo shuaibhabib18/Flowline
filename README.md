@@ -1,6 +1,6 @@
 # Flowline
 
-**AI-Native SOP Execution Engine** — Parse, execute, and train on Standard Operating Procedures.
+**AI-Native SOP Execution Engine** - Parse, execute, and train on Standard Operating Procedures.
 
 ---
 
